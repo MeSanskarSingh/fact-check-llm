@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.utils.file_handler import save_upload_file, delete_file
 from app.services.preprocessing_service import preprocess_input
-from app.services.validation_service import validation_service
+from app.services.validation_service import get_validation_service
 from app.services.clustering_service import run_clustering
 from app.models.schemas import ProcessResponse
 
@@ -20,7 +20,7 @@ async def upload_and_process(file: UploadFile = File(...)):
         text = preprocess_input(file_path)
 
         # Validate
-        validation = validation_service.validate_text(text)
+        validation = get_validation_service().validate_text(text)
 
         # Cluster
         cluster_id = run_clustering(text)
