@@ -10,7 +10,7 @@ def get_preprocessor():
 
 
 def preprocess_input(input_data):
-    processor = get_preprocessor()  # ✅ always initialize safely
+    processor = get_preprocessor()
 
     result = processor.process_input(input_data)
 
