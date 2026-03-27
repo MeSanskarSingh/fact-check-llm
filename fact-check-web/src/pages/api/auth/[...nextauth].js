@@ -17,7 +17,7 @@ export default NextAuth({
           id: profile.sub,
           name: profile.name,
           email: profile.email,
-          image: profile.picture, // 🔥 THIS IS THE FIX
+          image: profile.picture,
         };
       },
     }),
