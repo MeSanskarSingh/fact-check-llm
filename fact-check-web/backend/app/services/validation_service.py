@@ -41,7 +41,7 @@ Claim:
         try:
             response = self.chain.invoke({"input": text})
 
-            # 🔥 Try parsing JSON safely
+            # Try parsing JSON safely
             import json
             data = json.loads(response)
 
@@ -61,6 +61,10 @@ Claim:
                 "explanation": "Validation failed, fallback used"
             }
 
+validation_service = None
 
-# 🔥 Singleton instance (best practice)
-validation_service = ValidationService()
+def get_validation_service():
+    global validation_service
+    if validation_service is None:
+        validation_service = ValidationService()
+    return validation_service
