@@ -11,6 +11,7 @@ torch==2.2.2
 easyocr==1.7.2
 faster-whisper==1.2.1
 opencv-python==4.9.0.80
+matplotlib
 
 # Audio/Video
 ffmpeg-python
