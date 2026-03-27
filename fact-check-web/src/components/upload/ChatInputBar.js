@@ -35,7 +35,7 @@ export default function ChatInputBar({ onTextSubmit }) {
         onClick={handleSubmit}
         className="p-2 rounded-full bg-purple-600 hover:bg-purple-500 transition"
       >
-        <FiSend className="w-4 h-4 text-white" />
+        <FiSend className="w-4 h-4 text-white cursor-pointer" />
       </button>
     </div>
   );

@@ -1,0 +1,4 @@
+claim_id,claim,canonical_text,claim_type,entities,time,location,verdict,cluster_id
+0,,Smoking causes cancer.,other,[],,,insufficient,1
+1,,Smoking causes cancer.,other,[],,,insufficient,1
+2,,Smoking causes cancer.,other,[],,,insufficient,1

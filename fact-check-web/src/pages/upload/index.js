@@ -6,10 +6,12 @@ import { useSession } from "next-auth/react";
 
 import Navbar from "@/components/layout/Navbar";
 import Button from "@/components/ui/Button";
+import { UnderwaterBackground } from "@/components/backgrounds/UnderwaterBackground";
 
 import UploadPreview from "@/components/upload/UploadPreview";
 import ChatInputBar from "@/components/upload/ChatInputBar";
 import FileOptions from "@/components/upload/FileOptions";
+import { uploadFile } from "@/services/uploadService";
 
 import { getFileType } from "@/utils/fileHelpers";
 
@@ -67,24 +69,41 @@ export default function UploadPage() {
   };
 
   // Analyze
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!file) return;
 
-    router.push("/result/123"); // mock
+    try {
+      const result = await uploadFile(file);
+
+      // store current result
+      localStorage.setItem("result", JSON.stringify(result));
+
+      // store history
+      const history = JSON.parse(localStorage.getItem("history")) || [];
+
+      history.unshift({
+        id: Date.now(),
+        verdict: result.verdict,
+        confidence: result.confidence,
+        extractedText: result.extractedText,
+        createdAt: new Date().toISOString(),
+      });
+
+      localStorage.setItem("history", JSON.stringify(history));
+
+      router.push(`/result/${Date.now()}`);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
-    <main className="min-h-screen text-white pt-20 relative overflow-hidden bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#050505]">
+    <UnderwaterBackground>
+    <main className="min-h-screen text-white pt-20 relative overflow-hidden">
       
-      {/*  Background */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-[-100px] left-[-100px] w-[400px] h-[400px] bg-purple-600 opacity-20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-[-120px] right-[-100px] w-[400px] h-[400px] bg-blue-500 opacity-20 rounded-full blur-3xl"></div>
-      </div>
-
       <Navbar />
 
-      <div className="max-w-3xl mx-auto px-6 py-12 text-center">
+      <div className="max-w-3xl mx-auto px-6 py-24 text-center">
         
         {/* Title */}
         <h1 className="text-3xl md:text-4xl font-bold mb-8">
@@ -121,5 +140,6 @@ export default function UploadPage() {
         )}
       </div>
     </main>
+    </UnderwaterBackground>
   );
 }

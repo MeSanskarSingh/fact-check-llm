@@ -1,6 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+
 import Navbar from "@/components/layout/Navbar";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -9,23 +11,44 @@ export default function ResultPage() {
   const router = useRouter();
   const { id } = router.query;
 
-  if (!id) {
-  return (
-    <main className="min-h-screen flex items-center justify-center text-white">
-      Loading...
-    </main>
-  );
-}
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock Data (replace later with API)
-  const result = {
-    verdict: "Fake",
-    confidence: 82,
-    extractedText:
-      "Breaking news: A massive event has shocked the world...",
-    explanation:
-      "The content contains multiple unverifiable claims and lacks credible sources. Similar patterns have been flagged in known misinformation datasets.",
-  };
+  // Load result from localStorage
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const data = localStorage.getItem("result");
+
+    if (data) {
+      setResult(JSON.parse(data));
+    }
+
+    setLoading(false);
+  }, [router.isReady]);
+
+  // Loading state
+  if (loading || !id) {
+    return (
+      <main className="min-h-screen flex items-center justify-center text-white">
+        Loading result...
+      </main>
+    );
+  }
+
+  // No data fallback
+  if (!result) {
+    return (
+      <main className="min-h-screen flex items-center justify-center text-white">
+        <div className="text-center">
+          <p className="mb-4 text-gray-400">No result found</p>
+          <Button onClick={() => router.push("/upload")}>
+            Go Back to Upload
+          </Button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen text-white pt-20 bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#050505]">
@@ -57,7 +80,7 @@ export default function ResultPage() {
           <div>
             <p className="text-gray-400">Confidence</p>
             <h2 className="text-xl font-semibold">
-              {result.confidence}%
+              {Math.round(result.confidence * 100)}%
             </h2>
           </div>
         </Card>
@@ -67,7 +90,7 @@ export default function ResultPage() {
           <h3 className="text-lg font-semibold mb-2">
             Extracted Content
           </h3>
-          <p className="text-gray-300 leading-relaxed">
+          <p className="text-gray-300 leading-relaxed whitespace-pre-line">
             {result.extractedText}
           </p>
         </Card>

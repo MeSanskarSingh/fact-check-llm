@@ -11,6 +11,15 @@ export default NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture, // 🔥 THIS IS THE FIX
+        };
+      },
     }),
 
     // Mock Credentials
@@ -36,6 +45,26 @@ export default NextAuth({
       },
     }),
   ],
+
+  callbacks: {
+  async jwt({ token, account, profile }) {
+    // First time login (Google)
+    if (account && profile) {
+      token.picture = profile.picture;
+      token.name = profile.name;
+    }
+    return token;
+  },
+
+  async session({ session, token }) {
+    // Inject into session
+    if (token) {
+      session.user.image = token.picture;
+      session.user.name = token.name;
+    }
+    return session;
+  },
+},
 
   session: {
     strategy: "jwt",

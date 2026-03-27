@@ -3,13 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
-import { FiUpload } from "react-icons/fi";
 import Button from "../ui/Button";
 
 export default function Navbar() {
   const router = useRouter();
   const { data: session } = useSession();
-
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-black/40 backdrop-blur-md border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -29,14 +27,15 @@ export default function Navbar() {
               
               {/* Avatar */}
               <div className="flex items-center gap-2">
-                {session.user?.image ? (
+                {session?.user?.image ? (
                   <img
                     src={session.user.image}
                     alt="avatar"
-                    className="w-8 h-8 rounded-full"
+                    className="w-9 h-9 rounded-full border border-gray-600 object-cover"
+                    referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-sm">
+                  <div className="w-9 h-9 rounded-full bg-purple-500 flex items-center justify-center text-sm">
                     {session.user?.name?.[0] || "U"}
                   </div>
                 )}

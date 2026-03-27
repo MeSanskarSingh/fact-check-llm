@@ -32,6 +32,8 @@ import csv
 import json
 import os
 
+from ml_pipeline.clustering.similarity import similarity_check
+
 import numpy as np
 
 # ─────────────────────────────────────────────

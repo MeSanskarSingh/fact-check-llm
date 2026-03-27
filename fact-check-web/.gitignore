@@ -42,3 +42,5 @@ next-env.d.ts
 
 # pipeline outputs
 backend/ml_pipeline/outputs/
+
+venv/

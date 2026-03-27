@@ -1,37 +1,25 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+
 import Navbar from "@/components/layout/Navbar";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
-import { useRouter } from "next/router";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const [history, setHistory] = useState([]);
 
-  // Mock history data
-  const history = [
-    {
-      id: "1",
-      type: "Text",
-      verdict: "Fake",
-      confidence: 82,
-    },
-    {
-      id: "2",
-      type: "Image",
-      verdict: "Real",
-      confidence: 91,
-    },
-    {
-      id: "3",
-      type: "Video",
-      verdict: "Fake",
-      confidence: 76,
-    },
-  ];
+  useEffect(() => {
+    const data = localStorage.getItem("history");
+    if (data) {
+      setHistory(JSON.parse(data));
+    }
+  }, []);
 
   return (
-    <main className="min-h-screen text-white pt-20 bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#050505]">
+    <main className="min-h-screen text-white pt-20 bg-linear-to-br from-[#050505] via-[#0a0a1a] to-[#050505]">
       
       <Navbar />
 
@@ -42,17 +30,33 @@ export default function DashboardPage() {
           Your Dashboard
         </h1>
 
-        {/* History List */}
+        {/* Empty State */}
+        {history.length === 0 && (
+          <div className="text-center text-gray-400">
+            <p>No analysis history yet.</p>
+            <Button
+              className="mt-4"
+              onClick={() => router.push("/upload")}
+            >
+              Start Analyzing
+            </Button>
+          </div>
+        )}
+
+        {/* History */}
         <div className="space-y-4">
           {history.map((item) => (
             <Card
               key={item.id}
               className="p-5 flex items-center justify-between hover:bg-gray-900 transition cursor-pointer"
-              onClick={() => router.push(`/result/${item.id}`)}
+              onClick={() => {
+                localStorage.setItem("result", JSON.stringify(item));
+                router.push(`/result/${item.id}`);
+              }}
             >
               <div>
                 <p className="text-gray-400 text-sm">
-                  {item.type} Analysis
+                  Analysis
                 </p>
                 <h3
                   className={`font-semibold ${
@@ -70,7 +74,7 @@ export default function DashboardPage() {
                   Confidence
                 </p>
                 <p className="font-semibold">
-                  {item.confidence}%
+                  {Math.round(item.confidence * 100)}%
                 </p>
               </div>
             </Card>
@@ -78,11 +82,13 @@ export default function DashboardPage() {
         </div>
 
         {/* CTA */}
-        <div className="mt-10 text-center">
-          <Button onClick={() => router.push("/upload")}>
-            New Analysis
-          </Button>
-        </div>
+        {history.length > 0 && (
+          <div className="mt-10 text-center">
+            <Button onClick={() => router.push("/upload")}>
+              New Analysis
+            </Button>
+          </div>
+        )}
       </div>
     </main>
   );

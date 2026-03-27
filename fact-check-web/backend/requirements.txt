@@ -1,0 +1,25 @@
+# Core
+fastapi
+uvicorn
+python-multipart
+pydantic
+python-dotenv
+
+# ML + Processing
+numpy==2.0.0
+torch==2.2.2
+easyocr==1.7.2
+faster-whisper==1.2.1
+opencv-python==4.9.0.80
+
+# Audio/Video
+ffmpeg-python
+
+# LLM (Validation)
+langchain
+langchain-core
+langchain-mistralai
+
+# Utils
+tqdm
+scikit-learn

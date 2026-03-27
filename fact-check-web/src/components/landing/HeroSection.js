@@ -2,12 +2,13 @@
 import { useRouter } from "next/router";
 import Button from "../ui/Button";
 import FeatureHighlights from "./FeatureHighlights";
+import { Particles } from "@/components/backgrounds/ParticlesBackground";
 
 export default function HeroSection() {
   const router = useRouter();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden text-white bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#050505]">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden text-white ">
       
       {/* Background Gradient Blobs */}
       <div className="absolute inset-0 -z-10">
