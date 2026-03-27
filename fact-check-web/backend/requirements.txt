@@ -6,7 +6,7 @@ pydantic
 python-dotenv
 
 # ML + Processing
-numpy==2.0.0
+numpy==1.26.4
 torch==2.2.2
 easyocr==1.7.2
 faster-whisper==1.2.1
