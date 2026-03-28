@@ -2,7 +2,7 @@ export async function uploadFile(file) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const res = await fetch("http://localhost:8000/process/", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/process/`, {
     method: "POST",
     body: formData,
   });

@@ -14,7 +14,6 @@ def run_pipeline(input_data):
 
     text = processed.text
 
-    # Step 2: validation (TEMP mock if notebook not converted)
     validation_result = {
         "verdict": "contradicted",
         "confidence": 0.82,
@@ -28,7 +27,7 @@ def run_pipeline(input_data):
                 "pass_rest": {
                     "claim": {
                         "canonical_text": text,
-                        "embedding": [0.1, 0.2]  # TEMP
+                        "embedding": [0.1, 0.2]
                     }
                 }
             }

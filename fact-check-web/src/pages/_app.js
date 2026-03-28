@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { SessionProvider } from "next-auth/react";
 import PageLoader from "@/components/ui/PageLoader";
 import "@/styles/globals.css";
+import Head from "next/head";
 
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter();
@@ -25,8 +26,13 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
 
   return (
     <SessionProvider session={session}>
-      {loading && <PageLoader />}
-      <Component {...pageProps} />
+      <>
+        {loading && <PageLoader />}
+        <Head>
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <Component {...pageProps} />
+      </>
     </SessionProvider>
   );
 }

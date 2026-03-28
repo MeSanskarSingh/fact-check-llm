@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession, signOut } from "next-auth/react";
 import Button from "../ui/Button";
+import Image from "next/image";
 
 export default function Navbar() {
   const router = useRouter();
@@ -13,7 +14,14 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold">
+        <Link href="/" className="flex items-center gap-2 text-xl font-bold">
+          <Image 
+            alt="logo" 
+            src="/logo.png" 
+            height={40}  // Reduced height for a standard navbar feel
+            width={40}   // Reduced width to match text scale
+            className="rounded-lg" // Optional: adds a nice soft corner to the logo
+          />
           <span className="bg-gradient-to-r from-purple-400 via-pink-500 to-blue-500 text-transparent bg-clip-text">
             FactCheckLLM
           </span>

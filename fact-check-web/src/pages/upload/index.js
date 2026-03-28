@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 
+import Head from "next/head";
+
 import Navbar from "@/components/layout/Navbar";
 import Button from "@/components/ui/Button";
 import { UnderwaterBackground } from "@/components/backgrounds/UnderwaterBackground";
@@ -98,48 +100,54 @@ export default function UploadPage() {
   };
 
   return (
-    <UnderwaterBackground>
-    <main className="min-h-screen text-white pt-20 relative overflow-hidden">
-      
-      <Navbar />
+    <>
+      <Head>
+        <title>Upload and Analyze</title>
+      </Head>
 
-      <div className="max-w-3xl mx-auto px-6 py-24 text-center">
-        
-        {/* Title */}
-        <h1 className="text-3xl md:text-4xl font-bold mb-8">
-          Upload Anything
-        </h1>
+      <UnderwaterBackground>
+        <main className="min-h-screen text-white pt-20 relative overflow-hidden">
+          
+          <Navbar />
 
-        {/* Chat Input */}
-        <ChatInputBar onTextSubmit={handleTextSubmit} />
+          <div className="max-w-3xl mx-auto px-6 py-24 text-center">
+            
+            {/* Title */}
+            <h1 className="text-3xl md:text-4xl font-bold mb-8">
+              Upload Anything
+            </h1>
 
-        {/* File Options */}
-        <FileOptions onSelect={handleFileOption} />
+            {/* Chat Input */}
+            <ChatInputBar onTextSubmit={handleTextSubmit} />
 
-        {/* Hidden File Input */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          className="hidden"
-          onChange={handleFileChange}
-        />
+            {/* File Options */}
+            <FileOptions onSelect={handleFileOption} />
 
-        {/* Preview */}
-        <UploadPreview file={file} fileType={fileType} />
+            {/* Hidden File Input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              onChange={handleFileChange}
+            />
 
-        {/* Analyze Button */}
-        {file && (
-          <div className="flex justify-center mt-6">
-            <Button
-              onClick={handleAnalyze}
-              className="px-8 py-3 text-lg rounded-full"
-            >
-              Analyze
-            </Button>
+            {/* Preview */}
+            <UploadPreview file={file} fileType={fileType} />
+
+            {/* Analyze Button */}
+            {file && (
+              <div className="flex justify-center mt-6">
+                <Button
+                  onClick={handleAnalyze}
+                  className="px-8 py-3 text-lg rounded-full"
+                >
+                  Analyze
+                </Button>
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </main>
-    </UnderwaterBackground>
+        </main>
+        </UnderwaterBackground>
+    </>
   );
 }
