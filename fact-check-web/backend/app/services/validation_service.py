@@ -1,65 +1,79 @@
 import os
 from dotenv import load_dotenv
+from typing import Literal
 
 from langchain_mistralai import ChatMistralAI
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
+from langchain_core.output_parsers import PydanticOutputParser
+from pydantic import BaseModel, Field
 
 load_dotenv()
 
 
+# ✅ Step 1: Strict Schema
+class ValidationResult(BaseModel):
+    verdict: Literal["True", "False", "Uncertain"] = Field(
+        description="Final classification of the claim. Must be exactly one of: True, False, or Uncertain."
+    )
+    confidence: float = Field(
+        ge=0,
+        le=1,
+        description="Confidence score between 0 and 1 indicating how certain the model is."
+    )
+    explanation: str = Field(
+        description="Short reasoning explaining why the claim is classified this way."
+    )
+
+
 class ValidationService:
     def __init__(self):
-        self.llm = ChatMistralAI(
-            model="mistral-large-latest",
-            temperature=0.2
-        )
+        self.parser = PydanticOutputParser(pydantic_object=ValidationResult)
+
+        self.llm = ChatMistralAI()
 
         self.prompt = ChatPromptTemplate.from_template("""
 You are a fact-checking AI.
 
 Analyze the following claim and determine:
-1. Verdict: Real / Fake / Uncertain
+1. Verdict: must be exactly one of "True", "False", or "Uncertain"
 2. Confidence: number between 0 and 1
 3. Explanation: short reasoning
 
-Return STRICT JSON format:
+{format_instructions}
 
-{{
-  "verdict": "...",
-  "confidence": ...,
-  "explanation": "..."
-}}
+IMPORTANT:
+- Do NOT return anything except valid JSON
+- Do NOT add extra text
+- Ensure verdict is EXACTLY one of: True, False, Uncertain
 
 Claim:
 {input}
 """)
 
-        self.chain = self.prompt | self.llm | StrOutputParser()
+        self.chain = self.prompt | self.llm | self.parser
 
     def validate_text(self, text: str):
         try:
-            response = self.chain.invoke({"input": text})
-
-            # Try parsing JSON safely
-            import json
-            data = json.loads(response)
+            response: ValidationResult = self.chain.invoke({
+                "input": text,
+                "format_instructions": self.parser.get_format_instructions()
+            })
 
             return {
-                "verdict": data.get("verdict", "Uncertain"),
-                "confidence": float(data.get("confidence", 0.5)),
-                "explanation": data.get("explanation", "No explanation provided")
+                "verdict": response.verdict,
+                "confidence": response.confidence,
+                "explanation": response.explanation
             }
 
         except Exception as e:
             print("Validation error:", e)
 
-            # fallback (important)
             return {
                 "verdict": "Uncertain",
                 "confidence": 0.5,
                 "explanation": "Validation failed, fallback used"
             }
+
 
 validation_service = None
 

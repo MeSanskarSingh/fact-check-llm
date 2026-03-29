@@ -2,3 +2,11 @@ claim_id,claim,canonical_text,claim_type,entities,time,location,verdict,cluster_
 0,,Smoking causes cancer.,other,[],,,insufficient,1
 1,,Smoking causes cancer.,other,[],,,insufficient,1
 2,,Smoking causes cancer.,other,[],,,insufficient,1
+3,,Smoking causes cancer.,other,[],,,insufficient,1
+4,,Smoking causes cancer,other,[],,,insufficient,1
+5,,Smoking causes cancer.,other,[],,,insufficient,1
+6,,Covid 19 is spreading rapidly and causing numerous deaths in 2026,other,[],,,insufficient,1
+7,,Smoking causes cancer.,other,[],,,insufficient,1
+8,,COVID 19 is causing numerous deaths in 2026,other,[],,,insufficient,1
+9,,Smoking causes cancer.,other,[],,,insufficient,1
+10,,COVID 19 causing numerous deaths in 2026,other,[],,,insufficient,1
