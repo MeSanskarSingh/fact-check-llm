@@ -29,7 +29,8 @@ export default function App({ Component, pageProps: { session, ...pageProps } })
       <>
         {loading && <PageLoader />}
         <Head>
-          <link rel="icon" href="/favicon.ico" />
+          <link rel="icon" href="/favicon-v2.ico" />
+          {/* <link rel="icon" type="image/png" href="/favicon-v2.png" /> */}
         </Head>
         <Component {...pageProps} />
       </>
