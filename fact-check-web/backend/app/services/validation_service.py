@@ -32,14 +32,15 @@ class ValidationService:
         self.llm = ChatMistralAI()
 
         self.prompt = ChatPromptTemplate.from_template("""
-You are a fact-checking AI.
-
-Analyze the following claim and determine:
-1. Verdict: must be exactly one of "True", "False", or "Uncertain"
+You are a fact-checking AI. Use your own intelligence and sources to analyze the following claim and determine:
+1. Verdict: Real / Fake / Uncertain
 2. Confidence: number between 0 and 1
 3. Explanation: short reasoning
 
-{format_instructions}
+Instructions:
+Use real/fake when you are sure and uncertain when you have no credibility over the source.
+
+Return STRICT JSON format:
 
 IMPORTANT:
 - Do NOT return anything except valid JSON
