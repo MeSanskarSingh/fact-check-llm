@@ -4,70 +4,114 @@ from typing import Literal
 
 from langchain_mistralai import ChatMistralAI
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import PydanticOutputParser
+
 from pydantic import BaseModel, Field
+
+import json
+import re
 
 load_dotenv()
 
 
-# ✅ Step 1: Strict Schema
+# =========================
+# ✅ Schema
+# =========================
 class ValidationResult(BaseModel):
     verdict: Literal["True", "False", "Uncertain"] = Field(
-        description="Final classification of the claim. Must be exactly one of: True, False, or Uncertain."
+        description="Final classification of the claim"
     )
     confidence: float = Field(
         ge=0,
         le=1,
-        description="Confidence score between 0 and 1 indicating how certain the model is."
+        description="Confidence score between 0 and 1"
     )
     explanation: str = Field(
-        description="Short reasoning explaining why the claim is classified this way."
+        description="Short reasoning explaining the decision"
     )
 
 
+# =========================
+# ✅ Service
+# =========================
 class ValidationService:
     def __init__(self):
-        self.parser = PydanticOutputParser(pydantic_object=ValidationResult)
-
-        self.llm = ChatMistralAI()
+        self.llm = ChatMistralAI(temperature=0)
 
         self.prompt = ChatPromptTemplate.from_template("""
-You are a fact-checking AI. Use your own intelligence and sources to analyze the following claim and determine:
-1. Verdict: Real / Fake / Uncertain
+You are a fact-checking AI.
+
+Analyze the claim and determine:
+1. Verdict: True / False / Uncertain
 2. Confidence: number between 0 and 1
 3. Explanation: short reasoning
 
-Instructions:
-Use real/fake when you are sure and uncertain when you have no credibility over the source.
-
-Return STRICT JSON format:
-
 IMPORTANT:
-- Do NOT return anything except valid JSON
-- Do NOT add extra text
-- Ensure verdict is EXACTLY one of: True, False, Uncertain
+- Return ONLY raw JSON
+- DO NOT wrap response in ```json or ```
+- DO NOT add any extra text
+- Use EXACT keys:
+  verdict, confidence, explanation
+- verdict MUST be exactly one of: True, False, Uncertain
 
 Claim:
 {input}
 """)
 
-        self.chain = self.prompt | self.llm | self.parser
+        self.chain = self.prompt | self.llm
 
+    # =========================
+    # 🔥 Core Function
+    # =========================
     def validate_text(self, text: str):
         try:
-            response: ValidationResult = self.chain.invoke({
-                "input": text,
-                "format_instructions": self.parser.get_format_instructions()
-            })
+            # 🔹 Call LLM
+            raw_response = self.chain.invoke({"input": text})
+            content = raw_response.content.strip()
+
+            print("RAW LLM OUTPUT:", content)
+
+            # =========================
+            # 🔥 Extract JSON safely
+            # =========================
+            match = re.search(r"\{.*\}", content, re.DOTALL)
+            if not match:
+                raise ValueError("No JSON found in LLM response")
+
+            json_str = match.group(0)
+
+            # =========================
+            # 🔥 Parse JSON
+            # =========================
+            data = json.loads(json_str)
+
+            # =========================
+            # 🔥 Normalize keys
+            # =========================
+            data = {k.lower(): v for k, v in data.items()}
+
+            # =========================
+            # 🔥 Normalize values
+            # =========================
+            if isinstance(data.get("verdict"), str):
+                data["verdict"] = data["verdict"].strip().capitalize()
+
+            if "confidence" in data:
+                data["confidence"] = float(data["confidence"])
+
+            # =========================
+            # 🔥 Validate schema
+            # =========================
+            parsed = ValidationResult(**data)
 
             return {
-                "verdict": response.verdict,
-                "confidence": response.confidence,
-                "explanation": response.explanation
+                "verdict": parsed.verdict,
+                "confidence": parsed.confidence,
+                "explanation": parsed.explanation
             }
 
         except Exception as e:
-            print("Validation error:", e)
+            import traceback
+            traceback.print_exc()
 
             return {
                 "verdict": "Uncertain",
@@ -76,6 +120,9 @@ Claim:
             }
 
 
+# =========================
+# ✅ Singleton
+# =========================
 validation_service = None
 
 def get_validation_service():

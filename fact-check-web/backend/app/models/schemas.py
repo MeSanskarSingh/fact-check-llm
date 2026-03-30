@@ -1,10 +1,10 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, Field, model_validator
+from typing import Optional, Literal
 
 
 class ProcessResponse(BaseModel):
-    verdict: str
-    confidence: float
-    extractedText: str
-    explanation: str
+    verdict: Literal["True", "False", "Uncertain"]
+    confidence: float = Field(ge=0, le=1)
+    extractedText: str = Field(min_length=1)
+    explanation: str = Field(min_length=1)
     cluster: Optional[int] = None

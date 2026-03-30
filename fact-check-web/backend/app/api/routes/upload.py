@@ -18,6 +18,8 @@ async def upload_and_process(file: UploadFile = File(...)):
 
         # Preprocess
         text = preprocess_input(file_path)
+        if not text or not str(text).strip():
+            text = "No text could be extracted from the image."
 
         # Validate
         validation = get_validation_service().validate_text(text)
@@ -25,15 +27,28 @@ async def upload_and_process(file: UploadFile = File(...)):
         # Cluster
         cluster_id = run_clustering(text)
 
+        safe_text = text.strip() if text else ""
+        if not safe_text:
+            safe_text = "No text could be extracted from the image."
+
+        safe_explanation = validation.get("explanation", "").strip()
+        if not safe_explanation:
+            safe_explanation = "No explanation provided."
+
+        safe_verdict = validation.get("verdict", "Uncertain")
+        safe_confidence = float(validation.get("confidence", 0.5))
+
         return ProcessResponse(
-            verdict=validation["verdict"],
-            confidence=validation["confidence"],
-            extractedText=text,
-            explanation=validation["explanation"],
+            verdict=safe_verdict,
+            confidence=safe_confidence,
+            extractedText=safe_text,
+            explanation=safe_explanation,
             cluster=cluster_id
         )
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
     finally:
